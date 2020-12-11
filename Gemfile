@@ -34,7 +34,10 @@ group :development, :test do
   gem 'simplecov'
   gem 'rspec-rails', '~> 4.0.1'
   gem 'factory_bot_rails'
+end
 
+group :test do
+  gem 'shoulda-matchers', '~> 4.0'
 end
 
 group :development do
