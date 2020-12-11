@@ -25,7 +25,7 @@ csv.each do |item|
   i.save
 end
 
-#this sets all the id for all tables to be the max values in the table. So that when you generate a new record, it will do so after the last record id. (rather than start 0)
+#reset ids to max id in tables.  So when new records created, incrementing starts at end of table.
 ActiveRecord::Base.connection.tables.each do |t|
   ActiveRecord::Base.connection.reset_pk_sequence!(t)
 end
