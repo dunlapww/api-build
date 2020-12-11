@@ -7,5 +7,6 @@ describe Invoice, type: :model do
 
   #indirect from schema
   it {should have_many :invoice_items}
+  it {should have_many(:items).through(:invoice_items)}
   it {should have_many :transactions}
 end
