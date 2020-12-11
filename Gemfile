@@ -36,6 +36,7 @@ group :development, :test do
   gem 'pry'
   gem 'rspec-rails', '~> 4.0.1'
   gem 'simplecov'
+  gem 'fast_jsonapi'
 end
 
 group :test do
