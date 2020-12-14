@@ -60,12 +60,12 @@ describe 'Merchants API' do
 
   it 'can create a new merchant' do
     merchant_params = {
-      name: 'McGuckins',
+      name: 'McGuckins'
     }
 
     headers = { 'CONTENT_TYPE' => 'application/json' }
- 
-    post "/api/v1/merchants", headers: headers, params: JSON.generate(merchant: merchant_params)
+
+    post '/api/v1/merchants', headers: headers, params: JSON.generate(merchant: merchant_params)
     created_merchant = Merchant.last
 
     expect(response).to be_successful
@@ -76,19 +76,29 @@ describe 'Merchants API' do
 
   it 'cannot create a new merchant if invalid data is provided' do
     merchant_params = {
-      name: nil,
+      name: nil
     }
 
     headers = { 'CONTENT_TYPE' => 'application/json' }
- 
-    post "/api/v1/merchants", headers: headers, params: JSON.generate(merchant: merchant_params)
-    
+
+    post '/api/v1/merchants', headers: headers, params: JSON.generate(merchant: merchant_params)
+
     error = JSON.parse(response.body, symbolize_names: true)
-    
+
     expect(error[:data].count).to eq(3)
     expect(error[:data][:id]).to eq(0)
-    expect(error[:data][:type]).to eq("invalid request")
+    expect(error[:data][:type]).to eq('invalid request')
     expect(error[:data][:attributes].count).to eq(1)
     expect(error[:data][:attributes][:reasons]).to eq("Name can't be blank")
+  end
+
+  it 'can delete a merchant' do
+    merchant = create(:merchant)
+    merchant_params = { id: merchant.id }
+    expect { delete "/api/v1/merchants/#{merchant.id}" }.to change(Merchant, :count).by(-1)
+
+    expect(response).to be_successful
+    require 'pry'; binding.pry
+    expect{Merchant.find(merchant.id)}.to raise_error(ActiveRecord::RecordNotFound)
   end
 end
