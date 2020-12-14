@@ -16,7 +16,11 @@ class Api::V1::MerchantsController < ApplicationController
       error = Error.new(reasons)
       render json: ErrorSerializer.new(error) 
     end
-     
+  end
+
+  def destroy
+    merchant = Merchant.find(params[:id])
+    merchant.delete
   end
 
   private
