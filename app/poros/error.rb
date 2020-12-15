@@ -1,8 +1,7 @@
 class Error
-  attr_reader :error, :reasons
+  attr_reader :reasons
 
-  def initialize(errors)
-    @error = 'invalid request'
-    @reasons = errors
+  def initialize(error_messages)
+    @error_messages = error_messages
   end
 end

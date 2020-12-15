@@ -86,10 +86,10 @@ describe 'Merchants API' do
     error = JSON.parse(response.body, symbolize_names: true)
 
     expect(error[:data].count).to eq(3)
-    expect(error[:data][:id]).to eq(0)
-    expect(error[:data][:type]).to eq('invalid request')
+    expect(error[:data][:id]).to eq('0')
+    expect(error[:data][:type]).to eq('Bad Request')
     expect(error[:data][:attributes].count).to eq(1)
-    expect(error[:data][:attributes][:reasons]).to eq("Name can't be blank")
+    expect(error[:data][:attributes][:description]).to eq("Name can't be blank")
   end
 
   it 'can delete a merchant' do

@@ -12,9 +12,8 @@ class Api::V1::MerchantsController < ApplicationController
     if merchant.save
       render json: MerchantSerializer.new(merchant)
     else
-      reasons = merchant.errors.full_messages.to_sentence
-      error = Error.new(reasons)
-      render json: ErrorSerializer.new(error)
+      error_messages = merchant.errors.full_messages.to_sentence
+      render json: ErrorSerializer.new(error_messages)
     end
   end
 
