@@ -9,9 +9,9 @@ describe 'Merchants API' do
     expect(response).to be_successful
 
     merchants = JSON.parse(response.body, symbolize_names: true)
-    
+
     expect(merchants[:data].count).to eq(3)
-    
+
     merchants[:data].each do |merchant|
       expect(merchant).to have_key(:id)
       expect(merchant[:id]).to be_a(String)
@@ -31,7 +31,7 @@ describe 'Merchants API' do
 
     expect(response).to be_successful
     merchants = JSON.parse(response.body, symbolize_names: true)
-    expect(merchants).to eq({:data=>[]})
+    expect(merchants).to eq({ data: [] })
   end
   it 'can get one merchant by its id' do
     id = create(:merchant).id
@@ -40,22 +40,79 @@ describe 'Merchants API' do
 
     merchant = JSON.parse(response.body, symbolize_names: true)
     expect(response).to be_successful
-
     expect(merchant).to be_a(Hash)
     expect(merchant[:data]).to have_key(:id)
     expect(merchant[:data]).to have_key(:type)
     expect(merchant[:data][:type]).to eq(Merchant.name.downcase)
     expect(merchant[:data]).to have_key(:attributes)
-    
+
     expect(merchant[:data][:attributes]).to be_a(Hash)
     expect(merchant[:data][:attributes].count).to eq(3)
 
     merchant_dtl = merchant[:data][:attributes]
-   
+
     expect(merchant_dtl).to have_key(:name)
     expect(merchant_dtl[:name]).to be_a(String)
     expect(merchant_dtl[:created_at]).to be_a(String)
     expect(merchant_dtl).to have_key(:updated_at)
     expect(merchant_dtl[:updated_at]).to be_a(String)
+  end
+
+  it 'can create a new merchant' do
+    merchant_params = {
+      name: 'McGuckins'
+    }
+
+    headers = { 'CONTENT_TYPE' => 'application/json' }
+
+    post '/api/v1/merchants', headers: headers, params: JSON.generate(merchant_params)
+    created_merchant = Merchant.last
+
+    expect(response).to be_successful
+    expect(created_merchant.name).to eq(merchant_params[:name])
+    expect(created_merchant.created_at).to be_a(Time)
+    expect(created_merchant.updated_at).to be_a(Time)
+  end
+
+  it 'cannot create a new merchant if invalid data is provided' do
+    merchant_params = {
+      name: nil
+    }
+
+    headers = { 'CONTENT_TYPE' => 'application/json' }
+
+    post '/api/v1/merchants', headers: headers, params: JSON.generate(merchant_params)
+
+    error = JSON.parse(response.body, symbolize_names: true)
+
+    expect(error[:data].count).to eq(3)
+    expect(error[:data][:id]).to eq('0')
+    expect(error[:data][:type]).to eq('Bad Request')
+    expect(error[:data][:attributes].count).to eq(1)
+    expect(error[:data][:attributes][:description]).to eq("Name can't be blank")
+  end
+
+  it 'can delete a merchant' do
+    merchant = create(:merchant)
+    merchant_params = { id: merchant.id }
+    expect { delete "/api/v1/merchants/#{merchant.id}" }.to change(Merchant, :count).by(-1)
+
+    expect(response).to be_successful
+    expect{Merchant.find(merchant.id)}.to raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  it 'can update a merchant' do
+    id = create(:merchant).id
+    previous_name = Merchant.last.name
+    merchant_params = { name: "Great Merchant"}
+    headers = {"CONTENT_TYPE" => "application/json"}
+
+    # We include this header to make sure that these params are passed as JSON rather than as plain text
+    patch "/api/v1/merchants/#{id}", headers: headers, params: JSON.generate(merchant_params)
+    merchant = Merchant.find_by(id: id)
+
+    expect(response).to be_successful
+    expect(merchant.name).to_not eq(previous_name)
+    expect(merchant.name).to eq(merchant_params[:name])
   end
 end
