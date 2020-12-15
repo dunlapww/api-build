@@ -143,7 +143,4 @@ describe 'Merchants API' do
       end
     end
   end
-  it 'can search for a list of merchants' do
-    create_list(:merchants, 5)
-  end
 end
