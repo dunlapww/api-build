@@ -38,4 +38,31 @@ describe 'Items API' do
     items = JSON.parse(response.body, symbolize_names: true)
     expect(items).to eq({:data=>[]})
   end
+
+  it "can an return item's merchant" do
+    merchant_id = create(:merchant).id
+    item = create(:item, merchant_id: merchant_id)
+    get "/api/v1/items/#{item.id}/merchant"
+
+    expect(response).to be_successful
+
+    merchant = JSON.parse(response.body, symbolize_names: true)
+    expect(response).to be_successful
+    expect(merchant).to be_a(Hash)
+    expect(merchant[:data]).to have_key(:id)
+    expect(merchant[:data]).to have_key(:type)
+    expect(merchant[:data][:type]).to eq(Merchant.name.downcase)
+    expect(merchant[:data]).to have_key(:attributes)
+
+    expect(merchant[:data][:attributes]).to be_a(Hash)
+    expect(merchant[:data][:attributes].count).to eq(3)
+
+    merchant_dtl = merchant[:data][:attributes]
+
+    expect(merchant_dtl).to have_key(:name)
+    expect(merchant_dtl[:name]).to be_a(String)
+    expect(merchant_dtl[:created_at]).to be_a(String)
+    expect(merchant_dtl).to have_key(:updated_at)
+    expect(merchant_dtl[:updated_at]).to be_a(String)
+  end
 end
