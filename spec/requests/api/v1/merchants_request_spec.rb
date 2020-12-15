@@ -65,7 +65,7 @@ describe 'Merchants API' do
 
     headers = { 'CONTENT_TYPE' => 'application/json' }
 
-    post '/api/v1/merchants', headers: headers, params: JSON.generate(merchant: merchant_params)
+    post '/api/v1/merchants', headers: headers, params: JSON.generate(merchant_params)
     created_merchant = Merchant.last
 
     expect(response).to be_successful
@@ -81,7 +81,7 @@ describe 'Merchants API' do
 
     headers = { 'CONTENT_TYPE' => 'application/json' }
 
-    post '/api/v1/merchants', headers: headers, params: JSON.generate(merchant: merchant_params)
+    post '/api/v1/merchants', headers: headers, params: JSON.generate(merchant_params)
 
     error = JSON.parse(response.body, symbolize_names: true)
 
@@ -98,7 +98,21 @@ describe 'Merchants API' do
     expect { delete "/api/v1/merchants/#{merchant.id}" }.to change(Merchant, :count).by(-1)
 
     expect(response).to be_successful
-    require 'pry'; binding.pry
     expect{Merchant.find(merchant.id)}.to raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  it 'can update a merchant' do
+    id = create(:merchant).id
+    previous_name = Merchant.last.name
+    merchant_params = { name: "Great Merchant"}
+    headers = {"CONTENT_TYPE" => "application/json"}
+
+    # We include this header to make sure that these params are passed as JSON rather than as plain text
+    patch "/api/v1/merchants/#{id}", headers: headers, params: JSON.generate(merchant_params)
+    merchant = Merchant.find_by(id: id)
+
+    expect(response).to be_successful
+    expect(merchant.name).to_not eq(previous_name)
+    expect(merchant.name).to eq(merchant_params[:name])
   end
 end
