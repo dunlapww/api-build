@@ -1,7 +1,8 @@
 class Error
-  attr_reader :reasons
+  attr_reader :status, :detail
 
   def initialize(error_messages)
-    @error_messages = error_messages
+    @status = "400"
+    @detail = error_messages
   end
 end
