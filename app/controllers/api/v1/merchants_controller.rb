@@ -28,14 +28,10 @@ class Api::V1::MerchantsController < ApplicationController
     render json: MerchantSerializer.new(merchant)
   end
 
-  def merchant_items
-    items = Merchant.find(params[:merchant_id]).items
-    render json: ItemSerializer.new(items)
-  end
-
   private
 
   def merchant_params
     params.permit(:name)
   end
+
 end
