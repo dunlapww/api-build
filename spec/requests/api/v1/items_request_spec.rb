@@ -42,7 +42,7 @@ describe 'Items API' do
   it "can an return item's merchant" do
     merchant_id = create(:merchant).id
     item = create(:item, merchant_id: merchant_id)
-    get "/api/v1/items/#{item.id}/merchant"
+    get "/api/v1/items/#{item.id}/merchants"
 
     expect(response).to be_successful
 

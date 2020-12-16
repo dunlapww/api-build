@@ -143,4 +143,39 @@ describe 'Merchants API' do
       end
     end
   end
+
+  it 'can return a list of merchants that contain a fragment' do
+    
+    merchant1 = create(:merchant, name: "Great Merchant")
+    merchant2 = create(:merchant, name: "Neat Merchant")
+    merchant3 = create(:merchant, name: "Harold's")
+
+    search_params = {
+      name: 'erch'
+    }
+
+    headers = { 'CONTENT_TYPE' => 'application/json' }
+
+    get '/api/v1/merchants/find_all', headers: headers, params: search_params
+
+    expect(response).to be_successful
+
+    merchants = JSON.parse(response.body, symbolize_names: true)
+
+    expect(merchants[:data].count).to eq(2)
+
+    merchants[:data].each do |merchant|
+      expect(merchant).to have_key(:id)
+      expect(merchant[:id]).to be_a(String)
+      expect(merchant[:type]).to be_a(String)
+      expect(merchant[:type]).to eq(Merchant.name.downcase)
+      merchant[:attributes] do |attribute|
+        expect(attribute).to have_key(:name)
+        expect(attribute[:name]).to eq(merchant1.name).or eq(merchant2.name)
+        expect(attribute[:created_at]).to be_a(String)
+        expect(attribute).to have_key(:updated_at)
+        expect(attribute[:updated_at]).to be_a(String)
+      end
+    end
+  end
 end

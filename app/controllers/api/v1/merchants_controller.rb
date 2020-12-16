@@ -38,4 +38,5 @@ class Api::V1::MerchantsController < ApplicationController
   def merchant_params
     params.permit(:name)
   end
+
 end
