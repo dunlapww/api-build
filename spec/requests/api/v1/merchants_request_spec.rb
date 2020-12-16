@@ -146,17 +146,20 @@ describe 'Merchants API' do
 
   it 'can return a list of merchants that contain a fragment' do
     
-    merchant1 = create(:merchant, name: "Great Merchant")
+    ctime1 = "2020-12-16 03:21:52 UTC"
+    ctime2 = "2020-12-14 03:21:52 UTC"
+    utime1 = "2020-12-17 03:21:52 UTC"
+    utime2 = "2020-12-15 03:21:52 UTC"
+    merchant1 = create(:merchant, name: "Great Merchant", created_at: ctime1, updated_at: utime1)
     merchant2 = create(:merchant, name: "Neat Merchant")
-    merchant3 = create(:merchant, name: "Harold's")
-
-    search_params = {
+    merchant3 = create(:merchant, name: "Harold's", created_at: ctime2, updated_at: utime2)
+    name_search_params = {
       name: 'erch'
     }
 
     headers = { 'CONTENT_TYPE' => 'application/json' }
 
-    get '/api/v1/merchants/find_all', headers: headers, params: search_params
+    get '/api/v1/merchants/find_all', headers: headers, params: name_search_params
 
     expect(response).to be_successful
 
