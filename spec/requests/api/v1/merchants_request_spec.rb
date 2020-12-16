@@ -144,15 +144,12 @@ describe 'Merchants API' do
     end
   end
 
-  it 'can return a list of merchants that contain a fragment' do
-    
-    ctime1 = "2020-12-16 03:21:52 UTC"
-    ctime2 = "2020-12-14 03:21:52 UTC"
-    utime1 = "2020-12-17 03:21:52 UTC"
-    utime2 = "2020-12-15 03:21:52 UTC"
-    merchant1 = create(:merchant, name: "Great Merchant", created_at: ctime1, updated_at: utime1)
+  it 'can return a list of merchants that contain a fragment of a name' do
+   
+    merchant1 = create(:merchant, name: "Great Merchant")
     merchant2 = create(:merchant, name: "Neat Merchant")
-    merchant3 = create(:merchant, name: "Harold's", created_at: ctime2, updated_at: utime2)
+    merchant3 = create(:merchant, name: "Harold's")
+    
     name_search_params = {
       name: 'erch'
     }
@@ -160,6 +157,45 @@ describe 'Merchants API' do
     headers = { 'CONTENT_TYPE' => 'application/json' }
 
     get '/api/v1/merchants/find_all', headers: headers, params: name_search_params
+
+    expect(response).to be_successful
+
+    merchants = JSON.parse(response.body, symbolize_names: true)
+
+    expect(merchants[:data].count).to eq(2)
+
+    merchants[:data].each do |merchant|
+      expect(merchant).to have_key(:id)
+      expect(merchant[:id]).to be_a(String)
+      expect(merchant[:type]).to be_a(String)
+      expect(merchant[:type]).to eq(Merchant.name.downcase)
+      merchant[:attributes] do |attribute|
+        expect(attribute).to have_key(:name)
+        expect(attribute[:name]).to eq(merchant1.name).or eq(merchant2.name)
+        expect(attribute[:created_at]).to be_a(String)
+        expect(attribute).to have_key(:updated_at)
+        expect(attribute[:updated_at]).to be_a(String)
+      end
+    end
+  end
+
+  it 'can return a list of merchants that contain a fragment of a created_at time' do
+
+    ctime1 = "2020-12-16 03:21:52 UTC"
+    ctime2 = "2020-12-14 03:21:52 UTC"
+    utime1 = "2020-12-17 03:21:52 UTC"
+    utime2 = "2020-12-15 03:21:52 UTC"
+    merchant1 = create(:merchant, name: "Great Merchant", created_at: ctime1, updated_at: utime1)
+    merchant2 = create(:merchant, name: "Neat Merchant", created_at: ctime1)
+    merchant3 = create(:merchant, name: "Harold's", created_at: ctime2, updated_at: utime2)
+
+    created_search_params = {
+      created_at: ctime1
+    }
+
+    headers = { 'CONTENT_TYPE' => 'application/json' }
+
+    get '/api/v1/merchants/find_all', headers: headers, params: created_search_params
 
     expect(response).to be_successful
 
