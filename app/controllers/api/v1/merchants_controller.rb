@@ -13,7 +13,7 @@ class Api::V1::MerchantsController < ApplicationController
       render json: MerchantSerializer.new(merchant)
     else
       error_messages = merchant.errors.full_messages.to_sentence
-      render json: ErrorSerializer.new(error_messages)
+      render json: ErrorSerializer.new(error_messages), status: :bad_request
     end
   end
 
