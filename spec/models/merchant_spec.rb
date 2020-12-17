@@ -76,9 +76,9 @@ describe Merchant, type: :model do
 
     it '.most_items' do
       ii7 = create(:invoice_item, invoice: @iv2, item: @it2, quantity: 100, unit_price: 2) #rev = $40
-      ii8 = create(:invoice_item, invoice: @iv3, item: @it3, quantity: 120, unit_price: 3) #rev = $90
+      ii8 = create(:invoice_item, invoice: @iv3, item: @it3, quantity: 2000, unit_price: 3) #rev = $90
       ii9 = create(:invoice_item, invoice: @iv4, item: @it4, quantity: 140, unit_price: 4) #rev = $160
-      expect(Merchant.most_items(3)).to eq([@m4, @m3, @m2])
+      expect(Merchant.most_items(3)).to eq([@m3, @m4, @m2])
     end
   end
 end
