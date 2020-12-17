@@ -1,6 +1,7 @@
 class Merchant < ApplicationRecord
   has_many :invoices, dependent: :destroy
   has_many :items, dependent: :destroy
+  has_many :transactions, through: :invoices
 
   validates :name, presence: true
 
@@ -13,5 +14,15 @@ class Merchant < ApplicationRecord
     else
       Merchant.where("#{search_field} = ?", search_term)
     end
+  end
+
+  def self.most_revenue(quantity)
+    Merchant.joins(invoices: [:invoice_items, :transactions])
+            .where("result = ?","success")
+            .where("status = ?","shipped")
+            .select("merchants.*, sum(invoice_items.quantity  * invoice_items.unit_price) as revenue")
+            .group(:id)
+            .order("revenue DESC")
+            .limit(quantity)
   end
 end
