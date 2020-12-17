@@ -51,7 +51,8 @@ describe Invoice, type: :model do
     it '.revenue_date_range' do
       start_date = '2020-01-03'
       end_date = '2020-01-05'
-      expect(Invoice.revenue(start_date, end_date)).to eq(500)
+      query_params = {start: start_date, end: end_date}
+      expect(Invoice.revenue(query_params)).to eq(500)
     end
   end
 end

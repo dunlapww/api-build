@@ -28,10 +28,19 @@ class Api::V1::MerchantsController < ApplicationController
     render json: MerchantSerializer.new(merchant)
   end
 
+  def revenue
+    revenue = Merchant.revenue(revenue_params[:merchant_id])
+    render json: RevenueSerializer.new(revenue, revenue_params)
+  end
+
   private
 
   def merchant_params
     params.permit(:name)
+  end
+
+  def revenue_params
+    params.permit(:merchant_id)
   end
 
 end

@@ -94,6 +94,18 @@ describe 'As a user' do
       expect(json[:data].last[:type]).to eq "merchant"
       expect(json[:data].last[:attributes][:name]).to eq(@m2.name)
       
+    end
+    it 'single merchant revenue' do
+      
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      get "/api/v1/merchants/#{@m1.id}/revenue", headers: headers
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to be_successful
+      expect(json[:data].count).to eq(1)
+      expect(json[:data][:attributes][:revenue]).to eq(10)
+      expect(json[:data][:attributes][:merchant_id]).to eq(@m1.id.to_s)
 
     end
   end

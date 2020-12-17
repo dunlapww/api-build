@@ -1,8 +1,7 @@
 class Api::V1::RevenueController < ApplicationController
   def revenue
-    start_date = revenue_params[:start]
-    end_date = revenue_params[:end]
-    render json: RevenueSerializer.new(Invoice.revenue(start_date,end_date), start_date, end_date)
+    revenue = Invoice.revenue(revenue_params)
+    render json: RevenueSerializer.new(revenue, revenue_params)
   end
 
   private
