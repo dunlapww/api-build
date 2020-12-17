@@ -135,4 +135,22 @@ describe 'Items API' do
     expect(updated_item.unit_price).to eq(merchant_params[:unit_price])
     expect(updated_item.merchant_id).to eq(item.merchant_id)
   end
+
+  it 'can return a list of items that contain a date or fragment of a name' do
+    item1 = create(:item, name: "Great item")
+    item2 = create(:item, name: "Neat item")
+    item3 = create(:item, name: "a bucket")
+    
+    item_search_params = {
+      name: 'tem'
+    }
+
+    headers = { 'CONTENT_TYPE' => 'application/json' }
+
+    get '/api/v1/items/find_all', headers: headers, params: item_search_params
+
+    expect(response).to be_successful
+
+    items = JSON.parse(response.body, symbolize_names: true)
+  end
 end
