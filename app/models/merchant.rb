@@ -6,14 +6,10 @@ class Merchant < ApplicationRecord
   validates :name, presence: true
 
   def self.find_all(search_data)
-    search_field = search_data.keys.first
-    search_term = search_data[search_field]
-
-    if search_field.to_s == 'name'
-      Merchant.where("UPPER(#{search_field}) LIKE (?)", "%#{search_term.upcase}%")
-    else
-      Merchant.where("#{search_field} = ?", search_term)
-    end
+    return Merchant.where('name ILIKE (?)', "%#{search_data[:name]}%") if search_data[:name]
+    return Merchant.where('created_at = (?)', search_data[:created_at]) if search_data[:created_at]
+    return Merchant.where('updated_at = (?)', search_data[:updated_at]) if search_data[:updated_at]
+    []
   end
 
   def self.most_revenue(quantity)

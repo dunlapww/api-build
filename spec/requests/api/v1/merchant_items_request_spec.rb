@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Items API' do
+describe 'merchant_items API' do
   it 'can return a list of merchant items' do
     create_list(:item, 3)
 
@@ -64,54 +64,5 @@ describe 'Items API' do
     expect(merchant_dtl[:created_at]).to be_a(String)
     expect(merchant_dtl).to have_key(:updated_at)
     expect(merchant_dtl[:updated_at]).to be_a(String)
-  end
-
-  it 'it can get an item' do
-    item = create(:item)
-
-    get "/api/v1/items/#{item.id}"
-
-    item_dtl = JSON.parse(response.body, symbolize_names: true)
-
-    expect(response).to be_successful
-
-    expect(item_dtl[:data][:id]).to eq(item.id.to_s)
-    expect(item_dtl[:data][:type]).to eq(Item.name.downcase)
-    expect(item_dtl[:data][:attributes][:id]).to eq(item.id)
-    expect(item_dtl[:data][:attributes][:name]).to eq(item.name)
-    expect(item_dtl[:data][:attributes][:description]).to eq(item.description)
-    expect(item_dtl[:data][:attributes][:unit_price]).to eq(item.unit_price)
-    expect(item_dtl[:data][:attributes][:merchant_id]).to eq(item.merchant_id)
-    expect(item_dtl[:data][:attributes][:created_at].to_date).to be_a Date
-    expect(item_dtl[:data][:attributes][:updated_at].to_date).to be_a Date
-  end
-
-  it 'it can create an item' do
-    item = create(:item)
-
-    
-    item_params = {name: item.name,
-      description: item.description,
-      unit_price: item.unit_price,
-      merchant_id: item.merchant_id
-    }
-    
-    headers = { 'CONTENT_TYPE' => 'application/json' }
-
-    get "/api/v1/items", headers: headers, params: JSON.generate(item_params)
-    #created_item = Item.last
-
-    item_dtl = JSON.parse(response.body, symbolize_names: true)
-
-    expect(response).to be_successful
-    require 'pry'; binding.pry
-    expect(item_dtl[:data][:type]).to eq(Item.name.downcase)
-    expect(item_dtl[:data][:attributes][:id]).to eq(item.id)
-    expect(item_dtl[:data][:attributes][:name]).to eq(item.name)
-    expect(item_dtl[:data][:attributes][:description]).to eq(item.description)
-    expect(item_dtl[:data][:attributes][:unit_price]).to eq(item.unit_price)
-    expect(item_dtl[:data][:attributes][:merchant_id]).to eq(item.merchant_id)
-    expect(item_dtl[:data][:attributes][:created_at].to_date).to be_a Date
-    expect(item_dtl[:data][:attributes][:updated_at].to_date).to be_a Date
   end
 end
