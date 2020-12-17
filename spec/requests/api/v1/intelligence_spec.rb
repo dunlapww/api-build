@@ -69,5 +69,32 @@ describe 'As a user' do
       
 
     end
+    it 'most_items' do
+      ii7 = create(:invoice_item, invoice: @iv2, item: @it2, quantity: 100, unit_price: 2) 
+      ii8 = create(:invoice_item, invoice: @iv3, item: @it3, quantity: 2000, unit_price: 3) 
+      ii9 = create(:invoice_item, invoice: @iv4, item: @it4, quantity: 140, unit_price: 4)
+      
+      items_params = {quantity: 3}
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      get '/api/v1/merchants/most_items', headers: headers, params: items_params
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to be_successful
+      expect(json[:data].count).to eq(3)
+      expect(json[:data].first[:id]).to eq(@m3.id.to_s)
+      expect(json[:data].first[:type]).to eq "merchant"
+      expect(json[:data].first[:attributes][:name]).to eq(@m3.name)
+      
+      expect(json[:data][1][:id]).to eq(@m4.id.to_s)
+      expect(json[:data][1][:type]).to eq "merchant"
+      expect(json[:data][1][:attributes][:name]).to eq(@m4.name)
+      
+      expect(json[:data].last[:id]).to eq(@m2.id.to_s)
+      expect(json[:data].last[:type]).to eq "merchant"
+      expect(json[:data].last[:attributes][:name]).to eq(@m2.name)
+      
+
+    end
   end
 end
