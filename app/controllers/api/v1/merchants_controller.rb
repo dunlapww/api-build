@@ -20,6 +20,7 @@ class Api::V1::MerchantsController < ApplicationController
   def destroy
     merchant = Merchant.find(params[:id])
     merchant.delete
+    #should I render something here to let them know they succesfully deleted a record? 
   end
 
   def update
@@ -29,8 +30,8 @@ class Api::V1::MerchantsController < ApplicationController
   end
 
   def revenue
-    revenue = Merchant.revenue(revenue_params[:merchant_id])
-    render json: RevenueSerializer.new(revenue, revenue_params)
+    merchant = Merchant.find(query_params[:merchant_id])
+    render json: RevenueSerializer.new(merchant.revenue, query_params)
   end
 
   private
@@ -39,7 +40,7 @@ class Api::V1::MerchantsController < ApplicationController
     params.permit(:name)
   end
 
-  def revenue_params
+  def query_params
     params.permit(:merchant_id)
   end
 end

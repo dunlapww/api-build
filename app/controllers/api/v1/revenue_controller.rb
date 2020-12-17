@@ -1,12 +1,12 @@
 class Api::V1::RevenueController < ApplicationController
   def revenue
-    revenue = Invoice.revenue(revenue_params)
-    render json: RevenueSerializer.new(revenue, revenue_params)
+    revenue = Invoice.revenue(query_params)
+    render json: RevenueSerializer.new(revenue, query_params)
   end
 
   private
 
-  def revenue_params
+  def query_params
     params.permit(:start, :end)
   end
 end
