@@ -42,5 +42,4 @@ class Api::V1::MerchantsController < ApplicationController
   def revenue_params
     params.permit(:merchant_id)
   end
-
 end
