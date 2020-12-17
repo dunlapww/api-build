@@ -53,5 +53,21 @@ describe 'As a user' do
       expect(json[:data][:attributes][:start]).to eq(start_date)
       expect(json[:data][:attributes][:end]).to eq(end_date)
     end
+
+    it 'most_revenue' do
+      revenue_params = {quantity: 3}
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      get '/api/v1/merchants/most_revenue', headers: headers, params: revenue_params
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to be_successful
+      expect(json[:data].count).to eq(3)
+      expect(json[:data].first[:id]).to be_a String
+      expect(json[:data].first[:type]).to eq "merchant"
+      expect(json[:data].first[:attributes]).to be_a Hash
+      
+
+    end
   end
 end
