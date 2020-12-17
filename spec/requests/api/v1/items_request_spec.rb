@@ -119,17 +119,20 @@ describe 'Items API' do
   end
 
   it 'can update an item' do
-    id = create(:merchant).id
-    previous_name = Merchant.last.name
-    merchant_params = { name: "Great Merchant"}
+    merchant = create(:merchant)
+    item = Item.create(name: "best item", description: "it's the best", unit_price: 5.06, merchant_id: merchant.id)
+    previous_name = Item.last.name
+    merchant_params = { name: "mediocre item", description: "actually, it's not that great", unit_price: 2.02}
     headers = {"CONTENT_TYPE" => "application/json"}
 
     # We include this header to make sure that these params are passed as JSON rather than as plain text
-    patch "/api/v1/merchants/#{id}", headers: headers, params: JSON.generate(merchant_params)
-    merchant = Merchant.find_by(id: id)
+    patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(merchant_params)
+    updated_item = Item.find(item.id)
 
     expect(response).to be_successful
-    expect(merchant.name).to_not eq(previous_name)
-    expect(merchant.name).to eq(merchant_params[:name])
+    expect(updated_item.name).to eq(merchant_params[:name])
+    expect(updated_item.description).to eq(merchant_params[:description])
+    expect(updated_item.unit_price).to eq(merchant_params[:unit_price])
+    expect(updated_item.merchant_id).to eq(item.merchant_id)
   end
 end
