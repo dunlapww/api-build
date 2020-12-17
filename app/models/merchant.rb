@@ -36,7 +36,13 @@ class Merchant < ApplicationRecord
     .order("total_items DESC")
     .limit(quantity)
   end
-  
-  
-  #Merchant.joins(invoices: [:invoice_items, :transactions]).where("result = ?","success").where("status = ?","shipped").select("merchants.*, sum(invoice_items.quantity) as total_items").group(:id).order("total_items DESC").limit(3)
+
+  def self.revenue(id)
+    #Merchant.joins(invoices: [:invoice_items, :transactions]).where("result = ?","success").where("status = ?","shipped").where("merchants.id = ?", "1").sum("invoice_items.quantity  * invoice_items.unit_price")
+    Merchant.joins(invoices: [:invoice_items, :transactions])
+            .where("result = ?","success")
+            .where("status = ?","shipped")
+            .where("merchants.id = ?", "#{id}")
+            .sum("invoice_items.quantity  * invoice_items.unit_price")
+  end
 end
