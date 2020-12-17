@@ -74,10 +74,8 @@ describe 'Items API' do
     item_dtl = JSON.parse(response.body, symbolize_names: true)
 
     expect(response).to be_successful
-
     expect(item_dtl[:data][:id]).to eq(item.id.to_s)
     expect(item_dtl[:data][:type]).to eq(Item.name.downcase)
-    expect(item_dtl[:data][:attributes][:id]).to eq(item.id)
     expect(item_dtl[:data][:attributes][:name]).to eq(item.name)
     expect(item_dtl[:data][:attributes][:description]).to eq(item.description)
     expect(item_dtl[:data][:attributes][:unit_price]).to eq(item.unit_price)
@@ -87,31 +85,51 @@ describe 'Items API' do
   end
 
   it 'it can create an item' do
-    item = create(:item)
+    merchant = create(:merchant)
 
     
-    item_params = {name: item.name,
-      description: item.description,
-      unit_price: item.unit_price,
-      merchant_id: item.merchant_id
+    item_params = {name: "Shoes",
+      description: "Clown shoes",
+      unit_price: 5.93,
+      merchant_id: merchant.id
     }
     
     headers = { 'CONTENT_TYPE' => 'application/json' }
 
-    get "/api/v1/items", headers: headers, params: JSON.generate(item_params)
-    #created_item = Item.last
-
+    post "/api/v1/items", headers: headers, params: JSON.generate(item_params)
     item_dtl = JSON.parse(response.body, symbolize_names: true)
 
     expect(response).to be_successful
-    require 'pry'; binding.pry
+    expect(item_dtl[:data][:id].to_i).to eq(Item.last.id)
     expect(item_dtl[:data][:type]).to eq(Item.name.downcase)
-    expect(item_dtl[:data][:attributes][:id]).to eq(item.id)
-    expect(item_dtl[:data][:attributes][:name]).to eq(item.name)
-    expect(item_dtl[:data][:attributes][:description]).to eq(item.description)
-    expect(item_dtl[:data][:attributes][:unit_price]).to eq(item.unit_price)
-    expect(item_dtl[:data][:attributes][:merchant_id]).to eq(item.merchant_id)
+    expect(item_dtl[:data][:attributes][:name]).to eq(item_params[:name])
+    expect(item_dtl[:data][:attributes][:description]).to eq(item_params[:description])
+    expect(item_dtl[:data][:attributes][:unit_price]).to eq(item_params[:unit_price])
+    expect(item_dtl[:data][:attributes][:merchant_id]).to eq(item_params[:merchant_id])
     expect(item_dtl[:data][:attributes][:created_at].to_date).to be_a Date
     expect(item_dtl[:data][:attributes][:updated_at].to_date).to be_a Date
+  end
+
+  it 'can delete an item' do
+    item = create(:item)
+    expect { delete "/api/v1/items/#{item.id}" }.to change(Item, :count).by(-1)
+
+    expect(response).to be_successful
+    expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  it 'can update an item' do
+    id = create(:merchant).id
+    previous_name = Merchant.last.name
+    merchant_params = { name: "Great Merchant"}
+    headers = {"CONTENT_TYPE" => "application/json"}
+
+    # We include this header to make sure that these params are passed as JSON rather than as plain text
+    patch "/api/v1/merchants/#{id}", headers: headers, params: JSON.generate(merchant_params)
+    merchant = Merchant.find_by(id: id)
+
+    expect(response).to be_successful
+    expect(merchant.name).to_not eq(previous_name)
+    expect(merchant.name).to eq(merchant_params[:name])
   end
 end

@@ -39,7 +39,6 @@ describe 'Merchants API' do
     get "/api/v1/merchants/#{id}"
 
     merchant = JSON.parse(response.body, symbolize_names: true)
-    require 'pry'; binding.pry
     expect(response).to be_successful
     expect(merchant).to be_a(Hash)
     expect(merchant[:data]).to have_key(:id)
@@ -92,7 +91,6 @@ describe 'Merchants API' do
 
   it 'can delete a merchant' do
     merchant = create(:merchant)
-    merchant_params = { id: merchant.id }
     expect { delete "/api/v1/merchants/#{merchant.id}" }.to change(Merchant, :count).by(-1)
 
     expect(response).to be_successful
