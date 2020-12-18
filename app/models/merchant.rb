@@ -5,13 +5,6 @@ class Merchant < ApplicationRecord
 
   validates :name, presence: true
 
-  def self.find_all(search_data)
-    return Merchant.where('name ILIKE (?)', "%#{search_data[:name]}%") if search_data[:name]
-    return Merchant.where('created_at = (?)', search_data[:created_at]) if search_data[:created_at]
-    return Merchant.where('updated_at = (?)', search_data[:updated_at]) if search_data[:updated_at]
-    []
-  end
-
   def self.most_revenue(quantity)
     Merchant.joins(invoices: %i[invoice_items transactions])
             .where('result = ?', 'success')
