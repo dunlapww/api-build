@@ -21,7 +21,7 @@ class Api::V1::MerchantsController < ApplicationController
   def destroy
     merchant = Merchant.find(params[:id])
     merchant.delete
-    #should I render something here to let them know they succesfully deleted a record? 
+    # should I render something here to let them know they succesfully deleted a record?
   end
 
   def update

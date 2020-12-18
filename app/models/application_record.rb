@@ -6,6 +6,7 @@ class ApplicationRecord < ActiveRecord::Base
     value = search_data.values.first
 
     return [] if param.nil?
+
     if search_data[:name] || search_data[:description]
       where("#{param} ILIKE (?)", "%#{value}%")
     else

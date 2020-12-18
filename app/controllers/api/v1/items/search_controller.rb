@@ -3,7 +3,7 @@ class Api::V1::Items::SearchController < ApplicationController
     items = Item.find_all(item_params)
     render json: ItemSerializer.new(items)
   end
-  
+
   def find_first
     item = Item.find_all(item_params).first
     render json: ItemSerializer.new(item)

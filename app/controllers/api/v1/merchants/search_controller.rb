@@ -3,7 +3,7 @@ class Api::V1::Merchants::SearchController < ApplicationController
     merchants = Merchant.find_all(merchant_params)
     render json: MerchantSerializer.new(merchants)
   end
-  
+
   def find_first
     merchant = Merchant.find_all(merchant_params).first
     render json: MerchantSerializer.new(merchant)
