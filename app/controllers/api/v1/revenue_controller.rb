@@ -1,5 +1,5 @@
 class Api::V1::RevenueController < ApplicationController
-  def revenue
+  def total_revenue
     revenue = Invoice.revenue(query_params)
     render json: RevenueSerializer.new(revenue, query_params)
   end
