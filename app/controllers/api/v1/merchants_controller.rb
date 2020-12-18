@@ -4,7 +4,8 @@ class Api::V1::MerchantsController < ApplicationController
   end
 
   def show
-    merchant = Merchant.find(params[:id])
+    merchant = Merchant.find_by_id(params[:id])
+    return nil_merchant if merchant.nil?
     render json: MerchantSerializer.new(merchant)
   end
 
@@ -19,19 +20,26 @@ class Api::V1::MerchantsController < ApplicationController
   end
 
   def destroy
-    merchant = Merchant.find(params[:id])
+    merchant = Merchant.find_by_id(params[:id])
+    return nil_merchant if merchant.nil?
     merchant.delete
-    # should I render something here to let them know they succesfully deleted a record?
   end
 
   def update
-    merchant = Merchant.find(params[:id])
-    merchant.update(merchant_params)
-    render json: MerchantSerializer.new(merchant)
+    merchant = Merchant.find_by_id(params[:id])
+    return nil_merchant if merchant.nil?
+
+    if merchant.update(merchant_params)
+      render json: MerchantSerializer.new(merchant)
+    else
+      error_messages = merchant.errors.full_messages.to_sentence
+      render json: ErrorSerializer.new(error_messages), status: :bad_request
+    end
   end
 
   def revenue
-    merchant = Merchant.find(query_params[:merchant_id])
+    merchant = Merchant.find_by_id(query_params[:merchant_id])
+    return nil_merchant if merchant.nil?
     render json: RevenueSerializer.new(merchant.revenue, query_params)
   end
 
@@ -43,5 +51,9 @@ class Api::V1::MerchantsController < ApplicationController
 
   def query_params
     params.permit(:merchant_id)
+  end
+
+  def nil_merchant
+    render json: ErrorSerializer.new('merchant must exist'), status: :bad_request
   end
 end
