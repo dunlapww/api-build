@@ -54,6 +54,20 @@ describe 'As a user' do
       expect(json[:data][:attributes][:end]).to eq(end_date)
     end
 
+    it 'errors if an invalid date is entered' do
+      start_date = 'a'
+      end_date = '2020-01-05'
+      revenue_params = {start: start_date, end: end_date}
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      get '/api/v1/revenue', headers: headers, params: revenue_params
+
+      json = JSON.parse(response.body, symbolize_names: true)
+      expected = {:errors=>[{:status=>"400", :detail=>"invalid date"}]}
+      expect(json).to eq(expected)
+    end
+
     it 'most_revenue' do
       revenue_params = {quantity: 3}
       headers = { 'CONTENT_TYPE' => 'application/json' }
