@@ -83,7 +83,7 @@ describe Merchant, type: :model do
     end
   end
     
-  describe 'another class method' do
+  describe 'instance_methods' do
     before :each do
       #6 merchants
       @m1 = create(:merchant)
@@ -106,8 +106,8 @@ describe Merchant, type: :model do
       @t1 = create(:transaction, invoice: @iv1, result: 'success')
       @t2 = create(:transaction, invoice: @iv2, result: 'failure')
     end
-    it '.revenue' do 
-      expect(Merchant.revenue(@m1.id).round(0)).to eq(140)
+    it '#revenue' do 
+      expect(@m1.revenue.round(0)).to eq(140)
     end
   end
 end

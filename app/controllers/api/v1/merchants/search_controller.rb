@@ -1,14 +1,19 @@
 class Api::V1::Merchants::SearchController < ApplicationController
-  def show
+  def find_all
     merchants = Merchant.find_all(merchant_params)
     render json: MerchantSerializer.new(merchants)
+  end
+
+  def find_first
+    merchant = Merchant.find_all(merchant_params).first
+    render json: MerchantSerializer.new(merchant)
   end
 
   def most_revenue
     merchants = Merchant.most_revenue(merchant_params[:quantity])
     render json: MerchantSerializer.new(merchants)
   end
-  
+
   def most_items
     merchants = Merchant.most_items(merchant_params[:quantity])
     render json: MerchantSerializer.new(merchants)

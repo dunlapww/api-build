@@ -18,7 +18,7 @@ csv.each do |item|
   i.id = item['id']
   i.name = item['name']
   i.description = item['description']
-  i.unit_price = item['unit_price']
+  i.unit_price = item['unit_price'].to_f/100
   i.merchant_id = item['merchant_id']
   i.created_at = item['created_at']
   i.updated_at = item['updated_at']

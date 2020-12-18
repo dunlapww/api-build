@@ -91,7 +91,6 @@ describe 'Merchants API' do
 
   it 'can delete a merchant' do
     merchant = create(:merchant)
-    merchant_params = { id: merchant.id }
     expect { delete "/api/v1/merchants/#{merchant.id}" }.to change(Merchant, :count).by(-1)
 
     expect(response).to be_successful
@@ -216,5 +215,40 @@ describe 'Merchants API' do
         expect(attribute[:updated_at]).to be_a(String)
       end
     end
+  end
+  it 'can return a single merchant that contains a date or fragment of a name' do
+
+    ctime1 = "2020-12-16 03:21:52 UTC"
+    ctime2 = "2020-12-14 03:21:52 UTC"
+    utime1 = "2020-12-17 03:21:52 UTC"
+    utime2 = "2020-12-15 03:21:52 UTC"
+    merchant1 = create(:merchant, name: "Great Merchant", created_at: ctime1, updated_at: utime1)
+    merchant2 = create(:merchant, name: "Neat Merchant", created_at: ctime2)
+    merchant3 = create(:merchant, name: "Harold's", created_at: ctime2, updated_at: utime2)
+
+    created_search_params = {
+      created_at: ctime1
+    }
+
+    headers = { 'CONTENT_TYPE' => 'application/json' }
+
+    get '/api/v1/merchants/find', headers: headers, params: created_search_params
+
+    expect(response).to be_successful
+
+    merchant = JSON.parse(response.body, symbolize_names: true)
+    
+    expect(merchant[:data].count).to eq(3)
+    expect(merchant[:data][:id]).to be_a(String)
+    expect(merchant[:data][:type]).to eq(Merchant.name.downcase)
+    expect(merchant[:data][:attributes].count).to eq(3)
+    merchant[:attributes] do |attribute|
+      expect(attribute).to have_key(:name)
+      expect(attribute[:name]).to eq(merchant1.name)
+      expect(attribute[:created_at]).to be_a(String)
+      expect(attribute).to have_key(:updated_at)
+      expect(attribute[:updated_at]).to be_a(String)
+    end
+    
   end
 end
